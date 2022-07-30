@@ -13,11 +13,21 @@ class Repository {
   }
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getCollectionWithCondition(String collectionName,
+      getCollectionWithEqualCondition(String collectionName,
           String conditionFieldName, conditionFieldValue) async {
     final docRef = await _firestore
         .collection(collectionName)
         .where(conditionFieldName, isEqualTo: conditionFieldValue)
+        .get();
+    return docRef.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getCollectionWithInCondition(String collectionName,
+          String conditionFieldName, conditionFieldValue) async {
+    final docRef = await _firestore
+        .collection(collectionName)
+        .where(conditionFieldName, whereIn: conditionFieldValue)
         .get();
     return docRef.docs;
   }

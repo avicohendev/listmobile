@@ -13,11 +13,12 @@ class TodoListCollectionProvider with ChangeNotifier {
   final Repository _repo;
   List<ToDoListCollection> _collections;
 
-  fetchCollection(String userName) async {
-    final newCollection = await _repo.getCollectionWithCondition(
-        LIST_COLLECTION, "users", userName);
+  Future<void> fetchCollection(String userName) async {
+    final newCollection = await _repo
+        .getCollectionWithInCondition(LIST_COLLECTION, "users", [userName]);
     _collections = newCollection
         .map((e) => ToDoListCollection.fromJson(e.data()))
         .toList();
+    notifyListeners();
   }
 }

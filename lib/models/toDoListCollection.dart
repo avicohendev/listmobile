@@ -29,4 +29,8 @@ class ToDoListCollection {
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$ToDoListCollectionToJson(this);
+
+  factory ToDoListCollection.createEmpty() {
+    return ToDoListCollection(users: [], lists: []);
+  }
 }
