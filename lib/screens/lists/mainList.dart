@@ -53,10 +53,14 @@ class _MyListState extends State<MyList> {
                     return Consumer<TodoListCollectionProvider>(
                         builder: (context, value, child) {
                       return ListView.builder(
-                          itemBuilder: (ctx, i) => Text(collectionProvider
-                              .getCollection()
-                              .elementAt(i)
-                              .name),
+                          itemBuilder: (ctx, i) => ListTile(
+                                key: Key("collection_" + i.toString()),
+                                dense: true,
+                                title: Text(collectionProvider
+                                    .getCollection()
+                                    .elementAt(i)
+                                    .name),
+                              ),
                           itemCount: collectionProvider.getCollection().length);
                     });
                   }
