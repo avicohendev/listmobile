@@ -1,6 +1,9 @@
 import 'dart:io' show Platform;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:listmobile/db/Repository.dart';
+import 'package:listmobile/providers/ListCollectionProvider.dart';
 import 'package:listmobile/screens/lists/mainList.dart';
 import 'package:listmobile/screens/login.dart';
 import 'package:provider/provider.dart';
@@ -14,35 +17,59 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  Repository repo = Repository(FirebaseFirestore.instance);
+  runApp(MyApp(
+    repo: repo,
+    key: const Key("myApp"),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final Repository repo;
+  const MyApp({Key? key, required this.repo}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shopping List',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        //   }changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TodoListCollectionProvider>(
+            create: (_) => TodoListCollectionProvider(repo))
+      ],
+      child: MaterialApp(
+        title: 'Shopping List',
+        theme: ThemeData(
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          //   }changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (_) => const LoginPage(),
+          '/List': (_) => const MyList(
+                key: Key("1234"),
+              )
+        },
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case "/list":
+              return MaterialPageRoute(
+                  builder: (context) => const MyList(
+                        key: Key("1234"),
+                      ));
+            case "/login":
+              return MaterialPageRoute(builder: (context) => const LoginPage());
+            default:
+              return MaterialPageRoute(builder: (context) => const LoginPage());
+          }
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (_) => const LoginPage(),
-        '/List': (_) => const MyList(
-              key: Key("1234"),
-            )
-      },
     );
   }
 }

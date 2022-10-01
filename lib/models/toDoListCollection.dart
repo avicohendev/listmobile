@@ -9,6 +9,7 @@ part 'toDoListCollection.g.dart';
 class ToDoListCollection {
   List<String> users;
   List<ToDoList> lists;
+  String name;
 
   //if i want to use the long version i need to use late
   // ListItem({required String name, required int quantity}) {
@@ -17,7 +18,8 @@ class ToDoListCollection {
   // }
 
   //a short version will be
-  ToDoListCollection({required this.users, required this.lists});
+  ToDoListCollection(
+      {required this.users, required this.lists, required this.name});
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
@@ -31,6 +33,6 @@ class ToDoListCollection {
   Map<String, dynamic> toJson() => _$ToDoListCollectionToJson(this);
 
   factory ToDoListCollection.createEmpty() {
-    return ToDoListCollection(users: [], lists: []);
+    return ToDoListCollection(users: [], lists: [], name: "");
   }
 }

@@ -7,18 +7,37 @@ import 'package:provider/provider.dart';
 
 import '../common/constants.dart';
 
-class TodoListCollectionProvider with ChangeNotifier {
-  TodoListCollectionProvider(this._repo, this._collections);
+class TodoListCollectionProvider extends ChangeNotifier {
+  TodoListCollectionProvider(this._repo);
 
-  final Repository _repo;
-  List<ToDoListCollection> _collections;
+  Repository _repo;
+  late List<ToDoListCollection> _collections;
 
-  Future<void> fetchCollection(String userName) async {
-    final newCollection = await _repo
-        .getCollectionWithInCondition(LIST_COLLECTION, "users", [userName]);
+  Future<void> fetchCollectionsByUser(String userEmail) async {
+    final newCollection = await _repo.getCollectionWithInCondition(
+        LIST_COLLECTION, "users", userEmail);
     _collections = newCollection
         .map((e) => ToDoListCollection.fromJson(e.data()))
         .toList();
     notifyListeners();
+  }
+
+  Future<void> createColection(ToDoListCollection newCollection) async {
+    await _repo.setData(LIST_COLLECTION, newCollection.toJson());
+    await fetchCollectionsByUser(newCollection.users[0]);
+  }
+
+  Future<void> createNewListCollection(
+      {required String collectionName, required String email}) async {
+    ToDoListCollection newCollection = ToDoListCollection.createEmpty();
+    newCollection.name = collectionName;
+    newCollection.lists = [];
+    newCollection.users = [email];
+
+    await createColection(newCollection);
+  }
+
+  List<ToDoListCollection> getCollection() {
+    return [..._collections];
   }
 }

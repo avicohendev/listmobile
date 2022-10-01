@@ -26,3 +26,7 @@ signIn({required String email, required String password}) async {
     }
   }
 }
+
+User getUser() {
+  return FirebaseAuth.instance.currentUser!;
+}

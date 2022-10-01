@@ -27,7 +27,7 @@ class Repository {
           String conditionFieldName, conditionFieldValue) async {
     final docRef = await _firestore
         .collection(collectionName)
-        .where(conditionFieldName, whereIn: conditionFieldValue)
+        .where(conditionFieldName, arrayContains: conditionFieldValue)
         .get();
     return docRef.docs;
   }
