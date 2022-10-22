@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:listmobile/authentication/authentication.dart';
 import 'package:listmobile/common/OverlayBuilder.dart';
+import 'package:listmobile/common/widgets/collectionItem.dart';
 import 'package:listmobile/common/widgets/overlaySpinner.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:listmobile/providers/ListCollectionProvider.dart';
@@ -36,35 +37,39 @@ class _MyListState extends State<MyList> {
         Provider.of<TodoListCollectionProvider>(context, listen: false);
 
     return Scaffold(
-        appBar: AppBar(title: const Text('My Lists')),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          tooltip: "Add List",
-          onPressed: () => _dialogBuilder(context),
+      appBar: AppBar(title: const Text('My Lists')),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        tooltip: "Add List",
+        onPressed: () => _dialogBuilder(context),
+      ),
+      body: Center(
+        child: FutureBuilder<void>(
+          future: collectionProvider.fetchCollectionsByUser(getUser().email!),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: OverlaySpinner());
+            } else {
+              return Center(
+                child: Consumer<TodoListCollectionProvider>(
+                  builder: (context, value, child) {
+                    return Center(
+                        child: ListView.builder(
+                            itemBuilder: (ctx, i) => Card(
+                                  child: CollectionItem(
+                                      collection: collectionProvider
+                                          .getCollection()[i]),
+                                ),
+                            itemCount:
+                                collectionProvider.getCollection().length));
+                  },
+                ),
+              );
+            }
+          },
         ),
-        body: Center(
-            child: FutureBuilder<void>(
-                future:
-                    collectionProvider.fetchCollectionsByUser(getUser().email!),
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: OverlaySpinner());
-                  } else {
-                    return Consumer<TodoListCollectionProvider>(
-                        builder: (context, value, child) {
-                      return ListView.builder(
-                          itemBuilder: (ctx, i) => ListTile(
-                                key: Key("collection_" + i.toString()),
-                                dense: true,
-                                title: Text(collectionProvider
-                                    .getCollection()
-                                    .elementAt(i)
-                                    .name),
-                              ),
-                          itemCount: collectionProvider.getCollection().length);
-                    });
-                  }
-                })));
+      ),
+    );
   }
 
   Future<void> _dialogBuilder(BuildContext context) {

@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   OverlayEntry? entry;
   void showOverlay() {
@@ -45,56 +46,67 @@ class _LoginPageState extends State<LoginPage> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          children: <Widget>[
-            const SizedBox(height: 80.0),
-            Column(
-              children: const <Widget>[Text('Login')],
-            ),
-            const SizedBox(height: 120.0),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                filled: true,
-                labelText: 'Username',
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            children: <Widget>[
+              const SizedBox(height: 80.0),
+              Column(
+                children: const <Widget>[Text('Login')],
               ),
-            ),
-            const SizedBox(height: 12.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                filled: true,
-                labelText: 'Password',
+              const SizedBox(height: 120.0),
+              TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Username',
+                ),
               ),
-              obscureText: true,
-            ),
-            OverflowBar(
-              alignment: MainAxisAlignment.end,
-              children: <Widget>[
-                TextButton(
-                  child: const Text('CANCEL'),
-                  onPressed: () {
-                    _usernameController.clear();
-                    _passwordController.clear();
-                  },
+              const SizedBox(height: 12.0),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Password',
                 ),
-                // TODO: Add an elevation to NEXT (103)
-                // TODO: Add a beveled rectangular border to NEXT (103)
-                ElevatedButton(
-                  child: const Text('NEXT'),
-                  onPressed: () async {
-                    showOverlay();
-                    await signIn(
-                        email: _usernameController.text,
-                        password: _passwordController.text);
-                    Navigator.pushNamed(context, "/list");
-                    hideOverlay();
-                  },
-                ),
-              ],
-            ),
-          ],
+                obscureText: true,
+                onFieldSubmitted: (value) async {
+                  showOverlay();
+                  await signIn(
+                      email: _usernameController.text,
+                      password: _passwordController.text);
+                  Navigator.pushNamed(context, "/list");
+                  hideOverlay();
+                },
+              ),
+              OverflowBar(
+                alignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  TextButton(
+                    child: const Text('CANCEL'),
+                    onPressed: () {
+                      _usernameController.clear();
+                      _passwordController.clear();
+                    },
+                  ),
+                  // TODO: Add an elevation to NEXT (103)
+                  // TODO: Add a beveled rectangular border to NEXT (103)
+                  ElevatedButton(
+                    child: const Text('NEXT'),
+                    onPressed: () async {
+                      showOverlay();
+                      await signIn(
+                          email: _usernameController.text,
+                          password: _passwordController.text);
+                      Navigator.pushNamed(context, "/list");
+                      hideOverlay();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
