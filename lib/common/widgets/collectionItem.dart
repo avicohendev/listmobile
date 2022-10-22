@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
+import 'package:listmobile/providers/ListCollectionProvider.dart';
+import 'package:provider/provider.dart';
 
 class CollectionItem extends StatefulWidget {
-  final ToDoListCollection collection;
+  final int collectionLocation;
   const CollectionItem({
     Key? key,
-    required this.collection,
+    required this.collectionLocation,
   }) : super(key: key);
 
   @override
@@ -18,19 +20,29 @@ class _CollectionItemState extends State<CollectionItem> {
   bool isSelected = false;
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: isSelected ? const Icon(Icons.safety_check_rounded) : null,
-      key: Key("collection_" + widget.collection.name),
-      dense: true,
-      title: Text(widget.collection.name),
-      onTap: () {
-        print("click");
-      },
-      onLongPress: () {
-        print("long press");
-        setState(() {
-          isSelected = !isSelected;
-        });
+    return Consumer<TodoListCollectionProvider>(
+      builder: (context, value, child) {
+        ToDoListCollection _currentCollection =
+            value.collection[widget.collectionLocation];
+        return ListTile(
+          leading: value.showCheckBoxes
+              ? Checkbox(
+                  value: _currentCollection.selected,
+                  onChanged: (_) => value.changeSelection(
+                      widget.collectionLocation, !_currentCollection.selected))
+              : null,
+          key: Key("collection_" + _currentCollection.name),
+          dense: true,
+          title: Text(_currentCollection.name),
+          onTap: () {
+            print("click");
+          },
+          onLongPress: () {
+            print("long press");
+            value.changeSelection(
+                widget.collectionLocation, !_currentCollection.selected);
+          },
+        );
       },
     );
   }

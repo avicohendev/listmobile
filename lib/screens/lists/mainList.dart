@@ -18,6 +18,8 @@ class MyList extends StatefulWidget {
 
 class _MyListState extends State<MyList> {
   final _formKey = GlobalKey<FormState>();
+  List<Object> _selectedRows = [];
+
   final TextEditingController _collectionNameController =
       TextEditingController();
   Future<void> _refreshCollections(BuildContext context) async {
@@ -56,12 +58,9 @@ class _MyListState extends State<MyList> {
                     return Center(
                         child: ListView.builder(
                             itemBuilder: (ctx, i) => Card(
-                                  child: CollectionItem(
-                                      collection: collectionProvider
-                                          .getCollection()[i]),
+                                  child: CollectionItem(collectionLocation: i),
                                 ),
-                            itemCount:
-                                collectionProvider.getCollection().length));
+                            itemCount: collectionProvider.collection.length));
                   },
                 ),
               );

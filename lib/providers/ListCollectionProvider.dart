@@ -8,10 +8,13 @@ import 'package:provider/provider.dart';
 import '../common/constants.dart';
 
 class TodoListCollectionProvider extends ChangeNotifier {
-  TodoListCollectionProvider(this._repo);
+  TodoListCollectionProvider({required repo, showCheckBoxes = false})
+      : _showCheckBoxes = showCheckBoxes,
+        _repo = repo;
 
-  Repository _repo;
+  final Repository _repo;
   late List<ToDoListCollection> _collections;
+  bool _showCheckBoxes;
 
   Future<void> fetchCollectionsByUser(String userEmail) async {
     final newCollection = await _repo.getCollectionWithInCondition(
@@ -37,7 +40,19 @@ class TodoListCollectionProvider extends ChangeNotifier {
     await createColection(newCollection);
   }
 
-  List<ToDoListCollection> getCollection() {
+  changeSelection(int location, bool newSelectionValue) {
+    _collections[location].selected = newSelectionValue;
+    _changeCheckBoxState();
+    notifyListeners();
+  }
+
+  _changeCheckBoxState() {
+    _showCheckBoxes = _collections.any((element) => element.selected == true);
+  }
+
+  get showCheckBoxes => _showCheckBoxes;
+
+  List<ToDoListCollection> get collection {
     return [..._collections];
   }
 }

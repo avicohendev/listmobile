@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<TodoListCollectionProvider>(
-            create: (_) => TodoListCollectionProvider(repo))
+            create: (_) => TodoListCollectionProvider(repo: repo))
       ],
       child: MaterialApp(
         title: 'Shopping List',
