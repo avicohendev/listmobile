@@ -18,7 +18,7 @@ class MyList extends StatefulWidget {
 
 class _MyListState extends State<MyList> {
   final _formKey = GlobalKey<FormState>();
-
+  bool showTrashCan = false;
   final TextEditingController _collectionNameController =
       TextEditingController();
   Future<void> _refreshCollections(BuildContext context) async {
@@ -43,12 +43,13 @@ class _MyListState extends State<MyList> {
             const IconThemeData(size: 30.0, color: Colors.black, opacity: 10.0),
         title: const Text('My Lists'),
         actions: [
-          collectionProvider.showCheckBoxes
-              ? const Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Icon(Icons.ac_unit),
-                )
-              : Container()
+          Consumer<TodoListCollectionProvider>(
+              builder: (context, value, child) => value.showCheckBoxes
+                  ? Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Icon(Icons.delete),
+                    )
+                  : Container())
         ],
       ),
       floatingActionButton: FloatingActionButton(
