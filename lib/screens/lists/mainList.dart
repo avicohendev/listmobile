@@ -18,7 +18,6 @@ class MyList extends StatefulWidget {
 
 class _MyListState extends State<MyList> {
   final _formKey = GlobalKey<FormState>();
-  List<Object> _selectedRows = [];
 
   final TextEditingController _collectionNameController =
       TextEditingController();
@@ -39,7 +38,19 @@ class _MyListState extends State<MyList> {
         Provider.of<TodoListCollectionProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Lists')),
+      appBar: AppBar(
+        actionsIconTheme:
+            const IconThemeData(size: 30.0, color: Colors.black, opacity: 10.0),
+        title: const Text('My Lists'),
+        actions: [
+          collectionProvider.showCheckBoxes
+              ? const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Icon(Icons.ac_unit),
+                )
+              : Container()
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         tooltip: "Add List",

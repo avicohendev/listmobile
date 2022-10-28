@@ -24,13 +24,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: ((context) => Positioned(
             width: width,
             height: MediaQuery.of(context).size.height,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 2,
-                sigmaY: 2,
-              ),
-              child: const OverlaySpinner(),
-            ),
+            child: const OverlaySpinner(),
           )),
     );
 

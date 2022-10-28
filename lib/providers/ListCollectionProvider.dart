@@ -50,7 +50,7 @@ class TodoListCollectionProvider extends ChangeNotifier {
     _showCheckBoxes = _collections.any((element) => element.selected == true);
   }
 
-  get showCheckBoxes => _showCheckBoxes;
+  bool get showCheckBoxes => _showCheckBoxes;
 
   List<ToDoListCollection> get collection {
     return [..._collections];
