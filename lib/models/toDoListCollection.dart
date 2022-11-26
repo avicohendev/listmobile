@@ -10,6 +10,8 @@ class ToDoListCollection {
   List<String> users;
   List<ToDoList> lists;
   String name;
+  bool active;
+  String id;
 
   @JsonKey(ignore: true)
   bool _selected;
@@ -25,13 +27,16 @@ class ToDoListCollection {
       {required this.users,
       required this.lists,
       required this.name,
+      required this.active,
+      required this.id,
       selected = false})
       : _selected = selected;
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
-  factory ToDoListCollection.fromJson(Map<String, dynamic> json) {
+  factory ToDoListCollection.fromJson(id, Map<String, dynamic> json) {
+    json["id"] = id;
     ToDoListCollection collection = _$ToDoListCollectionFromJson(json);
     collection._selected = false;
     return collection;
@@ -52,6 +57,7 @@ class ToDoListCollection {
   Map<String, dynamic> toJson() => _$ToDoListCollectionToJson(this);
 
   factory ToDoListCollection.createEmpty() {
-    return ToDoListCollection(users: [], lists: [], name: "", selected: false);
+    return ToDoListCollection(
+        users: [], lists: [], name: "", selected: false, active: true, id: "");
   }
 }

@@ -31,7 +31,7 @@ class _CollectionItemState extends State<CollectionItem> {
                   onChanged: (_) => value.changeSelection(
                       widget.collectionLocation, !_currentCollection.selected))
               : null,
-          key: Key("collection_" + _currentCollection.name),
+          key: Key("collection_" + _currentCollection.id),
           dense: true,
           title: Text(_currentCollection.name),
           onTap: () {

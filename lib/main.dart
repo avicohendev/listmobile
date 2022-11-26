@@ -59,10 +59,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case "/list":
-              return MaterialPageRoute(
-                  builder: (context) => const MyList(
-                        key: Key("1234"),
-                      ));
+              return MaterialPageRoute(builder: (context) => const MyList());
             case "/login":
               return MaterialPageRoute(builder: (context) => const LoginPage());
             default:

@@ -28,6 +28,7 @@ class Repository {
     final docRef = await _firestore
         .collection(collectionName)
         .where(conditionFieldName, arrayContains: conditionFieldValue)
+        .where("active", isEqualTo: true)
         .get();
     return docRef.docs;
   }
@@ -36,4 +37,21 @@ class Repository {
       String collectionPath, Map<String, dynamic> data) async {
     return await _firestore.collection(collectionPath).add(data);
   }
+
+  Future<void> updateField(
+      {required String collectionPath,
+      required String doc,
+      required Map<String, dynamic> newValue}) async {
+    _firestore
+        .collection(collectionPath)
+        .doc(doc)
+        .set(newValue)
+        .onError((error, stackTrace) => print(error.toString()));
+  }
 }
+/*
+final washingtonRef = db.collection("cites").doc("DC");
+washingtonRef.update({"capital": true}).then(
+    (value) => print("DocumentSnapshot successfully updated!"),
+    onError: (e) => print("Error updating document $e"));
+*/

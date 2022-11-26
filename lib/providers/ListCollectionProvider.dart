@@ -20,7 +20,7 @@ class TodoListCollectionProvider extends ChangeNotifier {
     final newCollection = await _repo.getCollectionWithInCondition(
         LIST_COLLECTION, "users", userEmail);
     _collections = newCollection
-        .map((e) => ToDoListCollection.fromJson(e.data()))
+        .map((e) => ToDoListCollection.fromJson(e.id, e.data()))
         .toList();
     notifyListeners();
   }
@@ -48,6 +48,21 @@ class TodoListCollectionProvider extends ChangeNotifier {
 
   _changeCheckBoxState() {
     _showCheckBoxes = _collections.any((element) => element.selected == true);
+  }
+
+  Future<void> setDeleted(String userEmail) async {
+    for (var element in _collections) {
+      if (element.selected) {
+        await _repo.updateField(
+            collectionPath: LIST_COLLECTION,
+            doc: element.id,
+            newValue: {"active": false});
+        element.selected = false;
+      }
+    }
+    _showCheckBoxes = false;
+    await fetchCollectionsByUser(userEmail);
+    notifyListeners();
   }
 
   bool get showCheckBoxes => _showCheckBoxes;

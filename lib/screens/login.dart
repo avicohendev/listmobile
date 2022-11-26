@@ -93,8 +93,10 @@ class _LoginPageState extends State<LoginPage> {
                       await signIn(
                           email: _usernameController.text,
                           password: _passwordController.text);
-                      Navigator.pushNamed(context, "/list");
-                      hideOverlay();
+                      if (getUser().email != null) {
+                        Navigator.pushNamed(context, "/list");
+                        hideOverlay();
+                      }
                     },
                   ),
                 ],

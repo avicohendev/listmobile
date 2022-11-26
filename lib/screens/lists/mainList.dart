@@ -44,12 +44,12 @@ class _MyListState extends State<MyList> {
         title: const Text('My Lists'),
         actions: [
           Consumer<TodoListCollectionProvider>(
-              builder: (context, value, child) => value.showCheckBoxes
-                  ? Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Icon(Icons.delete),
-                    )
-                  : Container())
+            builder: (context, value, child) => value.showCheckBoxes
+                ? IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _onDeleteLists(context))
+                : Container(),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -116,6 +116,36 @@ class _MyListState extends State<MyList> {
                           collectionName: _collectionNameController.text,
                           email: getUser().email!);
                   String name = getUser().email!;
+                  OverlayBuilder.hideOverlay();
+                  Navigator.of(context).pop();
+                },
+              ),
+              InkWell(
+                child: const Text('Discard'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
+
+  Future<void> _onDeleteLists(BuildContext context) async {
+    String userEmail = getUser().email!;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Are you sure you want to delete?"),
+            actions: <Widget>[
+              InkWell(
+                child: const Text('Delete'),
+                onTap: () async {
+                  OverlayBuilder.showOverlay(context);
+                  await Provider.of<TodoListCollectionProvider>(context,
+                          listen: false)
+                      .setDeleted(userEmail);
                   OverlayBuilder.hideOverlay();
                   Navigator.of(context).pop();
                 },
