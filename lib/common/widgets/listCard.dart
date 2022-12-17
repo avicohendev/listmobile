@@ -1,50 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:listmobile/providers/ListCollectionProvider.dart';
 import 'package:listmobile/screens/lists/CollectionAndLists.dart';
 import 'package:provider/provider.dart';
 
-class CollectionItem extends StatefulWidget {
-  final int collectionLocation;
-  const CollectionItem({
-    Key? key,
-    required this.collectionLocation,
-  }) : super(key: key);
+class ListCard extends StatefulWidget {
+  final String collectionId;
+  final int listLocation;
+  const ListCard(
+      {Key? key, required this.listLocation, required this.collectionId})
+      : super(key: key);
 
   @override
-  State<CollectionItem> createState() => _CollectionItemState();
+  State<ListCard> createState() => _ListCardState();
 }
 
-class _CollectionItemState extends State<CollectionItem> {
+class _ListCardState extends State<ListCard> {
   bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoListCollectionProvider>(
       builder: (context, value, child) {
-        ToDoListCollection _currentCollection =
-            value.collection[widget.collectionLocation];
+        ToDoList _currentCollection = value.collection
+            .firstWhere((element) => element.id == widget.collectionId)
+            .lists[widget.listLocation];
         return ListTile(
           leading: value.showCheckBoxes
               ? Checkbox(
                   value: _currentCollection.selected,
                   onChanged: (_) => value.changeSelection(
-                      widget.collectionLocation, !_currentCollection.selected))
+                      widget.listLocation, !_currentCollection.selected))
               : null,
-          key: Key("collection_" + _currentCollection.id),
+          key: Key("collection_" + _currentCollection.name),
           dense: true,
           title: Text(_currentCollection.name),
+          subtitle: Text(_currentCollection.category),
           onTap: () {
             print("click");
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    CollectionAndLists(collectionId: _currentCollection.id)));
+            // Navigator.of(context).push(MaterialPageRoute(
+            //     builder: (context) =>
+            //         CollectionAndLists(collectionId: _currentCollection.id)));
           },
           onLongPress: () {
             print("long press");
             value.changeSelection(
-                widget.collectionLocation, !_currentCollection.selected);
+                widget.listLocation, !_currentCollection.selected);
           },
         );
       },

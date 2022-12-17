@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:listmobile/authentication/authentication.dart';
-import 'package:listmobile/common/OverlayBuilder.dart';
-import 'package:listmobile/common/widgets/collectionItem.dart';
+import 'package:listmobile/common/widgets/listCard.dart';
 import 'package:listmobile/common/widgets/overlaySpinner.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
-import 'package:listmobile/providers/ListCollectionProvider.dart';
 import 'package:provider/provider.dart';
 
-class MyList extends StatefulWidget {
-  const MyList({Key? key}) : super(key: key);
+import '../../authentication/authentication.dart';
+import '../../common/OverlayBuilder.dart';
+import '../../common/widgets/collectionItem.dart';
+import '../../providers/ListCollectionProvider.dart';
+
+class CollectionAndLists extends StatefulWidget {
+  final String collectionId;
+  const CollectionAndLists({Key? key, required this.collectionId})
+      : super(key: key);
 
   @override
-  State<MyList> createState() => _MyListState();
+  State<CollectionAndLists> createState() => _CollectionAndListsState();
 }
 
-class _MyListState extends State<MyList> {
+class _CollectionAndListsState extends State<CollectionAndLists> {
   final _formKey = GlobalKey<FormState>();
+
   bool showTrashCan = false;
-  final TextEditingController _collectionNameController =
-      TextEditingController();
-
-  // void initState() {
-  //   collectionProvider = Prov
-
-  // }
-
+  final TextEditingController _listNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     TodoListCollectionProvider collectionProvider =
@@ -36,7 +34,7 @@ class _MyListState extends State<MyList> {
       appBar: AppBar(
         actionsIconTheme:
             const IconThemeData(size: 30.0, color: Colors.black, opacity: 10.0),
-        title: const Text('My Collections'),
+        title: const Text('My Lists'),
         actions: [
           Consumer<TodoListCollectionProvider>(
             builder: (context, value, child) => value.showCheckBoxes
@@ -65,9 +63,18 @@ class _MyListState extends State<MyList> {
                     return Center(
                         child: ListView.builder(
                             itemBuilder: (ctx, i) => Card(
-                                  child: CollectionItem(collectionLocation: i),
+                                  child: ListCard(
+                                      collectionId: widget.collectionId,
+                                      listLocation: i),
                                 ),
-                            itemCount: collectionProvider.collection.length));
+                            itemCount: collectionProvider.collection
+                                .firstWhere(
+                                    (element) =>
+                                        element.id == widget.collectionId,
+                                    orElse: () =>
+                                        ToDoListCollection.createEmpty())
+                                .lists
+                                .length));
                   },
                 ),
               );
@@ -90,13 +97,13 @@ class _MyListState extends State<MyList> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    controller: _collectionNameController,
+                    controller: _listNameController,
                     validator: (value) {
-                      return value!.isNotEmpty ? null : "Enter collection Name";
+                      return value!.isNotEmpty ? null : "Enter List Name";
                     },
                     decoration: const InputDecoration(
-                        hintText: "Please Enter Collection Name"),
-                  )
+                        hintText: "Please Enter List Name"),
+                  ),
                 ],
               ),
             ),
@@ -107,10 +114,11 @@ class _MyListState extends State<MyList> {
                   OverlayBuilder.showOverlay(context);
                   await Provider.of<TodoListCollectionProvider>(context,
                           listen: false)
-                      .createNewListCollection(
-                          collectionName: _collectionNameController.text,
-                          email: getUser().email!);
-                  String name = getUser().email!;
+                      .createListInCollection(
+                          userEmail: getUser().email!,
+                          listCollectionId: widget.collectionId,
+                          name: _listNameController.text,
+                          category: "");
                   OverlayBuilder.hideOverlay();
                   Navigator.of(context).pop();
                 },

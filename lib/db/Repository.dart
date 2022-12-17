@@ -42,16 +42,12 @@ class Repository {
       {required String collectionPath,
       required String doc,
       required Map<String, dynamic> newValue}) async {
-    _firestore
+    await _firestore
         .collection(collectionPath)
         .doc(doc)
-        .set(newValue)
-        .onError((error, stackTrace) => print(error.toString()));
+        .set(newValue, SetOptions(merge: true))
+        .onError((error, stackTrace) {
+      print(error.toString());
+    });
   }
 }
-/*
-final washingtonRef = db.collection("cites").doc("DC");
-washingtonRef.update({"capital": true}).then(
-    (value) => print("DocumentSnapshot successfully updated!"),
-    onError: (e) => print("Error updating document $e"));
-*/

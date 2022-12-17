@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:listmobile/db/Repository.dart';
+import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:provider/provider.dart';
 
@@ -70,4 +71,30 @@ class TodoListCollectionProvider extends ChangeNotifier {
   List<ToDoListCollection> get collection {
     return [..._collections];
   }
+
+  Future<void> createListInCollection(
+      {required String userEmail,
+      required String listCollectionId,
+      required String name,
+      required String category}) async {
+    ToDoList newList = ToDoList.createEmpty();
+    newList.name = name;
+    newList.category = category;
+    Map<String, dynamic> list = {
+      LIST: [
+        ...collection
+            .firstWhere((element) => element.id == listCollectionId)
+            .lists
+            .map((e) => e.toJson()),
+        newList.toJson()
+      ]
+    };
+    await _repo.updateField(
+        collectionPath: LIST_COLLECTION, doc: listCollectionId, newValue: list);
+    await fetchCollectionsByUser(userEmail);
+  }
+
+  // Future<void> addList(String listName) async {
+
+  // }
 }
