@@ -48,9 +48,9 @@ class _MyListState extends State<MyList> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
         tooltip: "Add Collection",
         onPressed: () => _dialogBuilder(context),
+        child: const Icon(Icons.add),
       ),
       body: Center(
         child: FutureBuilder<void>(

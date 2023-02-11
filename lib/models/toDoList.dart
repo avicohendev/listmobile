@@ -34,14 +34,20 @@ class ToDoList {
   /// The constructor is named after the source class, in this case, User.
   factory ToDoList.fromJson(Map<String, dynamic> json) {
     ToDoList collection = _$ToDoListFromJson(json);
+
     collection._selected = false;
+
     return collection;
   }
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
-  Map<String, dynamic> toJson() => _$ToDoListToJson(this);
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = _$ToDoListToJson(this);
+    result["listItems"] = [...listItems.map((e) => e.toJson())];
+    return result;
+  }
 
   // ignore: unnecessary_getters_setters
   bool get selected {

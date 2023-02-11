@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:listmobile/common/widgets/listCard.dart';
 import 'package:listmobile/common/widgets/overlaySpinner.dart';
+import 'package:listmobile/models/listItem.dart';
+import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:provider/provider.dart';
 
@@ -10,20 +13,24 @@ import '../../authentication/authentication.dart';
 import '../../common/OverlayBuilder.dart';
 import '../../providers/ListCollectionProvider.dart';
 
-class CollectionAndLists extends StatefulWidget {
+class ListAndItems extends StatefulWidget {
   final String collectionId;
-  const CollectionAndLists({Key? key, required this.collectionId})
+  final String listName;
+  const ListAndItems(
+      {Key? key, required this.collectionId, required this.listName})
       : super(key: key);
 
   @override
-  State<CollectionAndLists> createState() => _CollectionAndListsState();
+  State<ListAndItems> createState() => _ListAndItemsState();
 }
 
-class _CollectionAndListsState extends State<CollectionAndLists> {
+class _ListAndItemsState extends State<ListAndItems> {
   final _formKey = GlobalKey<FormState>();
 
   bool showTrashCan = false;
-  final TextEditingController _listNameController = TextEditingController();
+  final TextEditingController _listItemNameController = TextEditingController();
+  final TextEditingController _listItemQuantityController =
+      TextEditingController();
   @override
   Widget build(BuildContext context) {
     TodoListCollectionProvider collectionProvider =
@@ -59,21 +66,19 @@ class _CollectionAndListsState extends State<CollectionAndLists> {
               return Center(
                 child: Consumer<TodoListCollectionProvider>(
                   builder: (context, value, child) {
+                    List<ListItem> listItems = value.collection
+                        .firstWhere(
+                            (element) => element.id == widget.collectionId)
+                        .lists
+                        .firstWhere(
+                            (element) => element.name == widget.listName,
+                            orElse: () => ToDoList.createEmpty())
+                        .listItems;
                     return Center(
                         child: ListView.builder(
-                            itemBuilder: (ctx, i) => Card(
-                                  child: ListCard(
-                                      collectionId: widget.collectionId,
-                                      listLocation: i),
-                                ),
-                            itemCount: collectionProvider.collection
-                                .firstWhere(
-                                    (element) =>
-                                        element.id == widget.collectionId,
-                                    orElse: () =>
-                                        ToDoListCollection.createEmpty())
-                                .lists
-                                .length));
+                            itemBuilder: (ctx, i) =>
+                                Card(child: Text(listItems[i].name)),
+                            itemCount: listItems.length));
                   },
                 ),
               );
@@ -89,19 +94,29 @@ class _CollectionAndListsState extends State<CollectionAndLists> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Create List Collection"),
+            title: const Text("Create List Item"),
             content: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    controller: _listNameController,
+                    controller: _listItemNameController,
                     validator: (value) {
                       return value!.isNotEmpty ? null : "Enter List Name";
                     },
                     decoration: const InputDecoration(
-                        hintText: "Please Enter List Name"),
+                        hintText: "Please Enter Item Name"),
+                  ),
+                  TextFormField(
+                    controller: _listItemQuantityController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) {
+                      return value!.isNotEmpty ? null : "Enter Quantity";
+                    },
+                    decoration: const InputDecoration(
+                        hintText: "Please Enter Item Quantity"),
                   ),
                 ],
               ),
@@ -113,11 +128,13 @@ class _CollectionAndListsState extends State<CollectionAndLists> {
                   OverlayBuilder.showOverlay(context);
                   await Provider.of<TodoListCollectionProvider>(context,
                           listen: false)
-                      .createListInCollection(
+                      .addItemToList(
                           userEmail: getUser().email!,
                           listCollectionId: widget.collectionId,
-                          name: _listNameController.text,
-                          category: "");
+                          listName: widget.listName,
+                          itemName: _listItemNameController.text,
+                          itemQuantity:
+                              int.parse(_listItemQuantityController.text));
                   OverlayBuilder.hideOverlay();
                   Navigator.of(context).pop();
                 },

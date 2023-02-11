@@ -5,6 +5,7 @@ import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:listmobile/providers/ListCollectionProvider.dart';
 import 'package:listmobile/screens/lists/CollectionAndLists.dart';
+import 'package:listmobile/screens/lists/listAndItems.dart';
 import 'package:provider/provider.dart';
 
 class ListCard extends StatefulWidget {
@@ -40,9 +41,10 @@ class _ListCardState extends State<ListCard> {
           subtitle: Text(_currentCollection.category),
           onTap: () {
             print("click");
-            // Navigator.of(context).push(MaterialPageRoute(
-            //     builder: (context) =>
-            //         CollectionAndLists(collectionId: _currentCollection.id)));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ListAndItems(
+                    collectionId: widget.collectionId,
+                    listName: _currentCollection.name)));
           },
           onLongPress: () {
             print("long press");

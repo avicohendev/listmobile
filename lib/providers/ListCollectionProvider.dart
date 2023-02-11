@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:listmobile/db/Repository.dart';
+import 'package:listmobile/models/listItem.dart';
 import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:provider/provider.dart';
@@ -94,7 +95,36 @@ class TodoListCollectionProvider extends ChangeNotifier {
     await fetchCollectionsByUser(userEmail);
   }
 
-  // Future<void> addList(String listName) async {
-
-  // }
+  Future<void> addItemToList(
+      {required String userEmail,
+      required String listCollectionId,
+      required String itemName,
+      required int itemQuantity,
+      required String listName}) async {
+    ListItem newItem = ListItem.createEmpty();
+    newItem.name = itemName;
+    newItem.quantity = itemQuantity;
+    newItem.lineCross = false;
+    collection
+        .firstWhere((element) => element.id == listCollectionId)
+        .lists
+        .firstWhere((element) => element.name == listName)
+        .listItems
+        .add(newItem);
+    Map<String, dynamic> list = {
+      LIST: [
+        ...collection
+            .firstWhere((element) => element.id == listCollectionId)
+            .lists
+            .map((e) {
+          Map<String, dynamic> result = e.toJson();
+          return result;
+          // result["listItems"] = [...e.listItems.map((e) => e.toJson())];
+        })
+      ]
+    };
+    await _repo.updateField(
+        collectionPath: LIST_COLLECTION, doc: listCollectionId, newValue: list);
+    await fetchCollectionsByUser(userEmail);
+  }
 }

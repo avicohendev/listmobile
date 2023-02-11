@@ -29,4 +29,8 @@ class ListItem {
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$ListItemToJson(this);
+
+  factory ListItem.createEmpty() {
+    return ListItem(name: "", quantity: 0);
+  }
 }
