@@ -5,7 +5,7 @@ import 'package:listmobile/models/toDoList.dart';
 import 'package:listmobile/models/toDoListCollection.dart';
 import 'package:listmobile/providers/ListCollectionProvider.dart';
 import 'package:listmobile/screens/lists/CollectionAndLists.dart';
-import 'package:listmobile/screens/lists/listAndItems.dart';
+import 'package:listmobile/listAndItems/screens/listAndItems.dart';
 import 'package:provider/provider.dart';
 
 class ListCard extends StatefulWidget {
